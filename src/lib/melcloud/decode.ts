@@ -1,4 +1,4 @@
-/** Decoders for raw ATA/ATW `settings` entries, mirroring aiomelcloudhome's ata.py / atw.py. */
+/** Decoders for raw ATA/ATW `settings` entries. */
 
 import { stringify } from "./stringify";
 import type {

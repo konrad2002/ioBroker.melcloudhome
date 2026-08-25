@@ -133,7 +133,9 @@ class MelCloudHomeAuth {
       const locationHeader = res.headers.get("location");
       const redirectUriParam = !locationHeader ? target.searchParams.get("RedirectUri") : null;
       const nextHop = locationHeader != null ? locationHeader : redirectUriParam;
-      this.debug(`Redirect hop ${i + 1}: HTTP ${res.status} for ${currentUrl}${nextHop ? ` -> ${nextHop}` : " (terminal)"}`);
+      this.debug(
+        `Redirect hop ${i + 1}: HTTP ${res.status} for ${currentUrl}${nextHop ? ` -> ${nextHop}` : " (terminal)"}`
+      );
       if (!nextHop) {
         return { location: currentUrl, response: res };
       }

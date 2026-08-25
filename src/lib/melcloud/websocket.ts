@@ -1,4 +1,4 @@
-/** On-demand WebSocket live-update client for Melcloud Home, mirroring aiomelcloudhome's websocket.py. */
+/** On-demand WebSocket live-update client for MELCloud Home. */
 
 import WebSocket from "ws";
 import type { AbstractAuth } from "./auth";

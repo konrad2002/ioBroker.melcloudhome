@@ -1,4 +1,4 @@
-/** OAuth 2.0 PKCE authentication for Melcloud Home, mirroring aiomelcloudhome's auth.py. */
+/** OAuth 2.0 PKCE authentication for MELCloud Home, including the Cognito-hosted login page flow. */
 
 import { createHash, randomBytes } from "node:crypto";
 import { CookieJar } from "./cookie-jar";

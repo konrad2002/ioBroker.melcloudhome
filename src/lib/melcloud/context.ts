@@ -1,4 +1,4 @@
-/** Parses raw `/context` API payloads into typed models, mirroring aiomelcloudhome's model_validators. */
+/** Parses raw `/context` API payloads into typed models. */
 
 import { coerceBool, coerceFloat, coerceInt, decodeAtaSetting, decodeAtwSetting } from "./decode";
 import type {

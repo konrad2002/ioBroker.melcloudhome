@@ -1,4 +1,4 @@
-/** REST client for the Melcloud Home API, mirroring aiomelcloudhome's aiomelcloudhome.py. */
+/** REST client for the MELCloud Home API. */
 
 import type { AbstractAuth } from "./auth";
 import { parseUserContext } from "./context";

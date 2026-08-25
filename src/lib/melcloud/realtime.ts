@@ -1,4 +1,4 @@
-/** Parses realtime WebSocket `unitStateChanged` frames, mirroring aiomelcloudhome's models/realtime.py. */
+/** Parses realtime WebSocket `unitStateChanged` frames. */
 
 import { decodeAtaSetting, decodeAtwSetting } from "./decode";
 import { stringify } from "./stringify";

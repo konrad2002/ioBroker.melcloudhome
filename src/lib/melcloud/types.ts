@@ -1,4 +1,4 @@
-/** Type definitions mirroring the aiomelcloudhome Python models (ata.py, atw.py, context.py, realtime.py). */
+/** Type definitions for the MELCloud Home API models (ATA units, ATW units, buildings/context, realtime deltas). */
 
 export const ATA_OPERATION_MODES = ["Heat", "Cool", "Automatic", "Dry", "Fan"] as const;
 export type ATAOperationMode = (typeof ATA_OPERATION_MODES)[number];

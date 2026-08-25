@@ -1,4 +1,4 @@
-/** Error types mirroring the aiomelcloudhome Python client's exception hierarchy. */
+/** Error types for the MELCloud Home client. */
 
 export class MelCloudHomeError extends Error {}
 

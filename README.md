@@ -22,6 +22,13 @@ Electric Corporation**. "Mitsubishi Electric" and "MELCloud Home" are trademarks
 used here only to describe compatibility. Use of this adapter and the MELCloud Home cloud service is subject to
 Mitsubishi Electric's own terms of service; use it at your own risk.
 
+### Credits
+
+The MELCloud Home API integration (login flow, REST endpoints, realtime WebSocket protocol) was implemented based
+on the reverse-engineering work of the Python library
+[aiomelcloudhome](https://github.com/erwindouna/aiomelcloudhome) by [erwindouna](https://github.com/erwindouna).
+This adapter is an independent TypeScript implementation and is not affiliated with that project.
+
 ## Features
 
 - Login with your MELCloud Home account (username/password), including the full OAuth2/PKCE + Cognito login flow
