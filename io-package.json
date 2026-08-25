@@ -1,0 +1,106 @@
+{
+	"common": {
+		"name": "melcloudhome",
+		"version": "0.0.1",
+		"news": {
+			"0.0.1": {
+				"en": "initial release",
+				"de": "Erstveröffentlichung",
+				"ru": "Начальная версия",
+				"pt": "lançamento inicial",
+				"nl": "Eerste uitgave",
+				"fr": "Première version",
+				"it": "Versione iniziale",
+				"es": "Versión inicial",
+				"pl": "Pierwsze wydanie",
+				"uk": "Початкова версія",
+				"zh-cn": "首次出版"
+			}
+		},
+		"titleLang": {
+			"en": "MEL Cloud Home",
+			"de": "MEL Cloud Home",
+			"ru": "MEL Облачный дом",
+			"pt": "Página inicial da nuvem MEL",
+			"nl": "MEL Cloud Home",
+			"fr": "Accueil Cloud MEL",
+			"it": "MEL Cloud Casa",
+			"es": "Inicio de la nube MEL",
+			"pl": "Dom w chmurze MEL",
+			"uk": "MEL Cloud Home",
+			"zh-cn": "梅尔云主页"
+		},
+		"desc": {
+			"en": "This adapter integrates Mitsubishi Electric devices via MELCloud Home into ioBroker.",
+			"de": "Dieser Adapter integriert Mitsubishi Electric Geräte über MELCloud Home in ioBroker.",
+			"ru": "Этот адаптер интегрирует устройства Mitsubishi Electric через MELCloud Home в ioBroker.",
+			"pt": "Este adaptador integra dispositivos Mitsubishi Electric através do MELCloud Home no ioBroker.",
+			"nl": "Deze adapter integreert Mitsubishi Electric-apparaten via MELCloud Home in ioBroker.",
+			"fr": "Cet adaptateur intègre les appareils Mitsubishi Electric via MELCloud Home dans ioBroker.",
+			"it": "Questo adattatore integra i dispositivi Mitsubishi Electric tramite MELCloud Home in ioBroker.",
+			"es": "Este adaptador integra dispositivos Mitsubishi Electric a través de MELCloud Home en ioBroker.",
+			"pl": "Ten adapter integruje urządzenia Mitsubishi Electric za pośrednictwem MELCloud Home z ioBroker.",
+			"uk": "Цей адаптер інтегрує пристрої Mitsubishi Electric через MELCloud Home в ioBroker.",
+			"zh-cn": "该适配器通过 MELCloud Home 将三菱电机设备集成到 ioBroker 中。"
+		},
+		"authors": ["konrad2002 <konrad@swimresults.de>"],
+		"keywords": ["melcloud", "melcloudhome", "aircondition", "mitsubishi"],
+		"licenseInformation": {
+			"type": "free",
+			"license": "MIT"
+		},
+		"platform": "Javascript/Node.js",
+		"icon": "melcloudhome.png",
+		"enabled": true,
+		"extIcon": "https://raw.githubusercontent.com/konrad2002/ioBroker.melcloudhome/master/admin/melcloudhome.png",
+		"readme": "https://github.com/konrad2002/ioBroker.melcloudhome/blob/master/README.md",
+		"loglevel": "info",
+		"tier": 3,
+		"mode": "daemon",
+		"type": "climate-control",
+		"compact": true,
+		"connectionType": "cloud",
+		"dataSource": "poll",
+		"adminUI": {
+			"config": "json"
+		},
+		"dependencies": [
+			{
+				"js-controller": ">=6.0.11"
+			}
+		],
+		"globalDependencies": [
+			{
+				"admin": ">=7.0.23"
+			}
+		]
+	},
+	"native": {
+		"option1": true,
+		"option2": "42"
+	},
+	"objects": [],
+	"instanceObjects": [
+		{
+			"_id": "info",
+			"type": "channel",
+			"common": {
+				"name": "Information"
+			},
+			"native": {}
+		},
+		{
+			"_id": "info.connection",
+			"type": "state",
+			"common": {
+				"role": "indicator.connected",
+				"name": "Device or service connected",
+				"type": "boolean",
+				"read": true,
+				"write": false,
+				"def": false
+			},
+			"native": {}
+		}
+	]
+}
