@@ -1,5 +1,7 @@
 {
 	"melcloudhome adapter settings": "melcloudhome的适配器设置",
-	"option1": "选项1",
-	"option2": "选项2"
+	"MELCloud Home username (email)": "MELCloud Home 用户名（电子邮件）",
+	"MELCloud Home password": "MELCloud Home 密码",
+	"Poll interval (seconds)": "轮询间隔（秒）",
+	"Use realtime WebSocket updates between polls": "在轮询之间使用实时 WebSocket 更新"
 }

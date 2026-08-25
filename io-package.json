@@ -76,9 +76,13 @@
 		]
 	},
 	"native": {
-		"option1": true,
-		"option2": "42"
+		"username": "",
+		"password": "",
+		"pollInterval": 60,
+		"useWebSocket": true
 	},
+	"encryptedNative": ["password"],
+	"protectedNative": ["password"],
 	"objects": [],
 	"instanceObjects": [
 		{

@@ -2,9 +2,9 @@
 	"i18n": true,
 	"type": "panel",
 	"items": {
-		"option1": {
-			"type": "checkbox",
-			"label": "option1",
+		"username": {
+			"type": "text",
+			"label": "MELCloud Home username (email)",
 			"newLine": true,
 			"xs": 12,
 			"sm": 12,
@@ -12,10 +12,34 @@
 			"lg": 4,
 			"xl": 4
 		},
-		"option2": {
-			"type": "text",
-			"label": "option2",
+		"password": {
+			"type": "password",
+			"label": "MELCloud Home password",
+			"newLine": false,
+			"xs": 12,
+			"sm": 12,
+			"md": 6,
+			"lg": 4,
+			"xl": 4
+		},
+		"pollInterval": {
+			"type": "number",
+			"label": "Poll interval (seconds)",
+			"min": 15,
+			"max": 3600,
+			"default": 60,
 			"newLine": true,
+			"xs": 12,
+			"sm": 12,
+			"md": 6,
+			"lg": 4,
+			"xl": 4
+		},
+		"useWebSocket": {
+			"type": "checkbox",
+			"label": "Use realtime WebSocket updates between polls",
+			"default": true,
+			"newLine": false,
 			"xs": 12,
 			"sm": 12,
 			"md": 6,

@@ -1,5 +1,7 @@
 {
 	"melcloudhome adapter settings": "Налаштування адаптера для melcloudhome",
-	"option1": "варіант1",
-	"option2": "варіант2"
+	"MELCloud Home username (email)": "Ім'я користувача MELCloud Home (email)",
+	"MELCloud Home password": "Пароль MELCloud Home",
+	"Poll interval (seconds)": "Інтервал опитування (секунди)",
+	"Use realtime WebSocket updates between polls": "Використовувати оновлення WebSocket у реальному часі між опитуваннями"
 }
