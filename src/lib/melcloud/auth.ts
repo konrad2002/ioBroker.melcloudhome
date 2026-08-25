@@ -127,6 +127,9 @@ export class MelCloudHomeAuth implements AbstractAuth {
 	private async fetchFollowingRedirects(url: string, init: RequestInit): Promise<RedirectResult> {
 		let currentUrl = url;
 		for (let i = 0; i < MAX_REDIRECTS; i++) {
+			if (!currentUrl || (!currentUrl.startsWith("http://") && !currentUrl.startsWith("https://"))) {
+				return { location: currentUrl };
+			}
 			const target = new URL(currentUrl);
 			let res: Response;
 			try {
@@ -139,21 +142,18 @@ export class MelCloudHomeAuth implements AbstractAuth {
 				throw new MelCloudHomeAuthenticationError(`Request to ${currentUrl} failed: ${(err as Error).message}`);
 			}
 			this.jar.storeFromHeaders(target, res.headers);
-			const location = res.headers.get("location");
-			this.debug(
-				`Redirect hop ${i + 1}: HTTP ${res.status} for ${currentUrl}${location ? ` -> ${location}` : ""}`,
-			);
-			if (res.status >= 300 && res.status < 400 && location) {
-				const resolved = resolveUrl(location, currentUrl);
-				if (!resolved.startsWith("http://") && !resolved.startsWith("https://")) {
-					return { location: resolved };
-				}
-				currentUrl = resolved;
-				// Only the initial request carries a method/body; subsequent redirect hops are GETs.
-				init = { headers: init.headers };
-				continue;
+			const locationHeader = res.headers.get("location");
+			// Some hops are client-side "Redirect" pages with no HTTP Location header; the real next
+			// hop is instead embedded in a `RedirectUri` query parameter of the page we just requested.
+			const redirectUriParam = !locationHeader ? target.searchParams.get("RedirectUri") : null;
+			const nextHop = locationHeader ?? redirectUriParam;
+			this.debug(`Redirect hop ${i + 1}: HTTP ${res.status} for ${currentUrl}${nextHop ? ` -> ${nextHop}` : " (terminal)"}`);
+			if (!nextHop) {
+				return { location: currentUrl, response: res };
 			}
-			return { location: currentUrl, response: res };
+			currentUrl = resolveUrl(nextHop, currentUrl);
+			// Only the initial request carries a method/body; subsequent redirect hops are GETs.
+			init = { headers: init.headers };
 		}
 		this.debug(`Gave up following redirects after ${MAX_REDIRECTS} hops, last url: ${currentUrl}`);
 		return { location: currentUrl };

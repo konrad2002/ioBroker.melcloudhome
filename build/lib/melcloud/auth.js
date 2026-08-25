@@ -115,6 +115,9 @@ class MelCloudHomeAuth {
   async fetchFollowingRedirects(url, init) {
     let currentUrl = url;
     for (let i = 0; i < MAX_REDIRECTS; i++) {
+      if (!currentUrl || !currentUrl.startsWith("http://") && !currentUrl.startsWith("https://")) {
+        return { location: currentUrl };
+      }
       const target = new URL(currentUrl);
       let res;
       try {
@@ -127,18 +130,15 @@ class MelCloudHomeAuth {
         throw new import_errors.MelCloudHomeAuthenticationError(`Request to ${currentUrl} failed: ${err.message}`);
       }
       this.jar.storeFromHeaders(target, res.headers);
-      const location = res.headers.get("location");
-      this.debug(`Redirect hop ${i + 1}: HTTP ${res.status} for ${currentUrl}${location ? ` -> ${location}` : ""}`);
-      if (res.status >= 300 && res.status < 400 && location) {
-        const resolved = resolveUrl(location, currentUrl);
-        if (!resolved.startsWith("http://") && !resolved.startsWith("https://")) {
-          return { location: resolved };
-        }
-        currentUrl = resolved;
-        init = { headers: init.headers };
-        continue;
+      const locationHeader = res.headers.get("location");
+      const redirectUriParam = !locationHeader ? target.searchParams.get("RedirectUri") : null;
+      const nextHop = locationHeader != null ? locationHeader : redirectUriParam;
+      this.debug(`Redirect hop ${i + 1}: HTTP ${res.status} for ${currentUrl}${nextHop ? ` -> ${nextHop}` : " (terminal)"}`);
+      if (!nextHop) {
+        return { location: currentUrl, response: res };
       }
-      return { location: currentUrl, response: res };
+      currentUrl = resolveUrl(nextHop, currentUrl);
+      init = { headers: init.headers };
     }
     this.debug(`Gave up following redirects after ${MAX_REDIRECTS} hops, last url: ${currentUrl}`);
     return { location: currentUrl };
@@ -173,7 +173,9 @@ class MelCloudHomeAuth {
     this.jar.storeFromHeaders(parTarget, parRes.headers);
     this.debug(`PAR response: HTTP ${parRes.status}`);
     if (!parRes.ok) {
-      throw new import_errors.MelCloudHomeAuthenticationError(`PAR request failed: HTTP ${parRes.status} - ${await safeBody(parRes)}`);
+      throw new import_errors.MelCloudHomeAuthenticationError(
+        `PAR request failed: HTTP ${parRes.status} - ${await safeBody(parRes)}`
+      );
     }
     let parData;
     try {
@@ -188,7 +190,9 @@ class MelCloudHomeAuth {
     this.debug("Following /connect/authorize redirects");
     const authResult = await this.fetchFollowingRedirects(authUrl, { method: "GET" });
     if (!authResult.response) {
-      this.debug(`Authorize landed directly on a non-http redirect (already authenticated at the IdP): ${authResult.location}`);
+      this.debug(
+        `Authorize landed directly on a non-http redirect (already authenticated at the IdP): ${authResult.location}`
+      );
       await this.handleCallbackLocation(authResult.location, verifier);
       return;
     }
@@ -241,7 +245,9 @@ class MelCloudHomeAuth {
     try {
       query = new URL(location).searchParams;
     } catch {
-      throw new import_errors.MelCloudHomeAuthenticationError(`No authorization code in callback (unparseable location: ${location})`);
+      throw new import_errors.MelCloudHomeAuthenticationError(
+        `No authorization code in callback (unparseable location: ${location})`
+      );
     }
     const code = query.get("code");
     if (!code) {
@@ -268,7 +274,9 @@ class MelCloudHomeAuth {
       throw new import_errors.MelCloudHomeAuthenticationError(`Token exchange failed: ${err.message}`);
     }
     if (!res.ok) {
-      throw new import_errors.MelCloudHomeAuthenticationError(`Token exchange failed: HTTP ${res.status} - ${await safeBody(res)}`);
+      throw new import_errors.MelCloudHomeAuthenticationError(
+        `Token exchange failed: HTTP ${res.status} - ${await safeBody(res)}`
+      );
     }
     this.storeTokens(await res.json());
     this.debug("Token exchange succeeded; session established");
@@ -301,7 +309,9 @@ class MelCloudHomeAuth {
         await this.authenticate();
         return;
       }
-      throw new import_errors.MelCloudHomeAuthenticationError(`Token refresh failed: HTTP ${res.status} - ${await safeBody(res)}`);
+      throw new import_errors.MelCloudHomeAuthenticationError(
+        `Token refresh failed: HTTP ${res.status} - ${await safeBody(res)}`
+      );
     }
     this.storeTokens(await res.json());
     this.debug("Token refresh succeeded");

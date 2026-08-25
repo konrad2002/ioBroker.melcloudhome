@@ -130,7 +130,9 @@ class Melcloudhome extends utils.Adapter {
     const context = await this.client.getContext();
     const ataCount = context.buildings.reduce((sum, b) => sum + b.airToAirUnits.length, 0);
     const atwCount = context.buildings.reduce((sum, b) => sum + b.airToWaterUnits.length, 0);
-    this.log.debug(`Fetched context: ${context.buildings.length} building(s), ${ataCount} ATA unit(s), ${atwCount} ATW unit(s)`);
+    this.log.debug(
+      `Fetched context: ${context.buildings.length} building(s), ${ataCount} ATA unit(s), ${atwCount} ATW unit(s)`
+    );
     await this.persistSession();
     for (const building of context.buildings) {
       const buildingId = this.sanitize(building.id);

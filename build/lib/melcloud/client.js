@@ -38,7 +38,9 @@ class MelCloudHomeClient {
     try {
       token = await this.auth.getAccessToken();
     } catch (err) {
-      (_b = this.logger) == null ? void 0 : _b.debug(`[client] Failed to obtain access token for ${method} ${uri}: ${err.message}`);
+      (_b = this.logger) == null ? void 0 : _b.debug(
+        `[client] Failed to obtain access token for ${method} ${uri}: ${err.message}`
+      );
       throw err;
     }
     const url = new URL(uri.replace(/^\//, ""), `${this.apiBase}/`);
@@ -62,7 +64,9 @@ class MelCloudHomeClient {
         signal: controller.signal
       });
     } catch (err) {
-      (_c = this.logger) == null ? void 0 : _c.debug(`[client] ${method} ${url.toString()} failed before a response was received: ${err.message}`);
+      (_c = this.logger) == null ? void 0 : _c.debug(
+        `[client] ${method} ${url.toString()} failed before a response was received: ${err.message}`
+      );
       if (err.name === "AbortError") {
         throw new import_errors.MelCloudHomeConnectionError(`Request timed out: ${uri}`);
       }
