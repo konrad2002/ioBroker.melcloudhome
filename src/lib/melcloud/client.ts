@@ -12,6 +12,7 @@ export class MelCloudHomeClient {
 		private readonly auth: AbstractAuth,
 		private readonly apiBase: string = API_BASE,
 		private readonly requestTimeoutMs = 10_000,
+		private readonly logger?: ioBroker.Logger,
 	) {}
 
 	private async request(
@@ -22,7 +23,14 @@ export class MelCloudHomeClient {
 			json?: Record<string, unknown>;
 		} = {},
 	): Promise<Record<string, unknown>> {
-		const token = await this.auth.getAccessToken();
+		const method = options.method ?? "GET";
+		let token: string;
+		try {
+			token = await this.auth.getAccessToken();
+		} catch (err) {
+			this.logger?.debug(`[client] Failed to obtain access token for ${method} ${uri}: ${(err as Error).message}`);
+			throw err;
+		}
 		const url = new URL(uri.replace(/^\//, ""), `${this.apiBase}/`);
 		if (options.params) {
 			for (const [key, value] of Object.entries(options.params)) {
@@ -35,7 +43,7 @@ export class MelCloudHomeClient {
 		let res: Response;
 		try {
 			res = await fetch(url, {
-				method: options.method ?? "GET",
+				method,
 				headers: {
 					Authorization: `Bearer ${token}`,
 					"Content-Type": "application/json",
@@ -45,6 +53,7 @@ export class MelCloudHomeClient {
 				signal: controller.signal,
 			});
 		} catch (err) {
+			this.logger?.debug(`[client] ${method} ${url.toString()} failed before a response was received: ${(err as Error).message}`);
 			if ((err as Error).name === "AbortError") {
 				throw new MelCloudHomeConnectionError(`Request timed out: ${uri}`);
 			}
@@ -53,6 +62,8 @@ export class MelCloudHomeClient {
 			clearTimeout(timeout);
 		}
 
+		this.logger?.debug(`[client] ${method} ${url.toString()} -> HTTP ${res.status}`);
+
 		if (res.status === 401) {
 			throw new MelCloudHomeAuthenticationError("Authentication failed");
 		}
@@ -60,7 +71,11 @@ export class MelCloudHomeClient {
 			throw new MelCloudHomeNotFoundError(`Resource not found: ${uri}`);
 		}
 		if (!res.ok) {
-			throw new MelCloudHomeConnectionError(`Request failed: HTTP ${res.status} for ${uri}`);
+			const body = await res
+				.text()
+				.then(t => t.slice(0, 300).replace(/\s+/g, " "))
+				.catch(() => "<unreadable body>");
+			throw new MelCloudHomeConnectionError(`Request failed: HTTP ${res.status} for ${uri} - ${body}`);
 		}
 
 		if (res.status === 204 || res.status === 304) {
@@ -70,7 +85,13 @@ export class MelCloudHomeClient {
 		if (!text) {
 			return {};
 		}
-		return JSON.parse(text) as Record<string, unknown>;
+		try {
+			return JSON.parse(text) as Record<string, unknown>;
+		} catch (err) {
+			throw new MelCloudHomeConnectionError(
+				`Response for ${uri} was not valid JSON: ${(err as Error).message} - body starts with: ${text.slice(0, 200).replace(/\s+/g, " ")}`,
+			);
+		}
 	}
 
 	/** Fetch the full user context (all buildings and devices). */

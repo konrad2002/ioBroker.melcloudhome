@@ -60,6 +60,9 @@ class Melcloudhome extends utils.Adapter {
 			this.log.error("Please configure your MELCloud Home username and password in the adapter settings.");
 			return;
 		}
+		this.log.debug(
+			`Starting with username "${username}", pollInterval=${this.config.pollInterval}s, useWebSocket=${Boolean(this.config.useWebSocket)}`,
+		);
 
 		await this.extendObjectAsync(SESSION_STATE_ID, {
 			type: "state",
@@ -74,16 +77,19 @@ class Melcloudhome extends utils.Adapter {
 			native: {},
 		});
 
-		this.auth = new MelCloudHomeAuth(username, password);
+		this.auth = new MelCloudHomeAuth(username, password, this.log);
 		const savedSession = await this.getStateAsync(SESSION_STATE_ID);
 		if (savedSession?.val && typeof savedSession.val === "string") {
 			try {
 				this.auth.importSession(JSON.parse(savedSession.val) as MelCloudHomeSession);
-			} catch {
-				this.log.debug("Could not parse persisted MELCloud Home session; a fresh login will be performed.");
+				this.log.debug("Restored persisted MELCloud Home session");
+			} catch (err) {
+				this.log.debug(
+					`Could not parse persisted MELCloud Home session (${(err as Error).message}); a fresh login will be performed.`,
+				);
 			}
 		}
-		this.client = new MelCloudHomeClient(this.auth);
+		this.client = new MelCloudHomeClient(this.auth, undefined, undefined, this.log);
 
 		if (this.config.useWebSocket) {
 			this.socket = new MelCloudHomeWebSocket(this.auth, {
@@ -111,7 +117,11 @@ class Melcloudhome extends utils.Adapter {
 			await this.refreshContext();
 			await this.setStateChangedAsync("info.connection", { val: true, ack: true });
 		} catch (err) {
-			this.log.error(`Failed to refresh MELCloud Home data: ${(err as Error).message}`);
+			const error = err as Error;
+			this.log.error(`Failed to refresh MELCloud Home data: ${error.message || String(err)}`);
+			if (error?.stack) {
+				this.log.debug(error.stack);
+			}
 			await this.setStateChangedAsync("info.connection", { val: false, ack: true });
 		}
 		if (!this.stopped) {
@@ -123,7 +133,11 @@ class Melcloudhome extends utils.Adapter {
 		if (!this.client || !this.auth) {
 			return;
 		}
+		this.log.debug("Fetching MELCloud Home context (/context)");
 		const context: UserContext = await this.client.getContext();
+		const ataCount = context.buildings.reduce((sum, b) => sum + b.airToAirUnits.length, 0);
+		const atwCount = context.buildings.reduce((sum, b) => sum + b.airToWaterUnits.length, 0);
+		this.log.debug(`Fetched context: ${context.buildings.length} building(s), ${ataCount} ATA unit(s), ${atwCount} ATW unit(s)`);
 		await this.persistSession();
 		for (const building of context.buildings) {
 			const buildingId = this.sanitize(building.id);
