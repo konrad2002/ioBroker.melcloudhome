@@ -28,6 +28,19 @@
         "pl": "rozwiązać problemy z połączeniem",
         "uk": "виправити проблеми з підключенням",
         "zh-cn": "修复连接问题"
+      },
+      "0.1.0" : {
+        "en": "first working version",
+        "de": "erste funktionierende Version",
+        "ru": "первая рабочая версия",
+        "pt": "primeira versão funcional",
+        "nl": "eerste werkende versie",
+        "fr": "première version fonctionnelle",
+        "it": "prima versione funzionante",
+        "es": "primera versión funcional",
+        "pl": "pierwsza działająca wersja",
+        "uk": "перша робоча версія",
+        "zh-cn": "第一个工作版本"
       }
     },
     "titleLang": {
