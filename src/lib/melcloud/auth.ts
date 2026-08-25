@@ -140,7 +140,9 @@ export class MelCloudHomeAuth implements AbstractAuth {
 			}
 			this.jar.storeFromHeaders(target, res.headers);
 			const location = res.headers.get("location");
-			this.debug(`Redirect hop ${i + 1}: HTTP ${res.status} for ${currentUrl}${location ? ` -> ${location}` : ""}`);
+			this.debug(
+				`Redirect hop ${i + 1}: HTTP ${res.status} for ${currentUrl}${location ? ` -> ${location}` : ""}`,
+			);
 			if (res.status >= 300 && res.status < 400 && location) {
 				const resolved = resolveUrl(location, currentUrl);
 				if (!resolved.startsWith("http://") && !resolved.startsWith("https://")) {
@@ -187,7 +189,9 @@ export class MelCloudHomeAuth implements AbstractAuth {
 		this.jar.storeFromHeaders(parTarget, parRes.headers);
 		this.debug(`PAR response: HTTP ${parRes.status}`);
 		if (!parRes.ok) {
-			throw new MelCloudHomeAuthenticationError(`PAR request failed: HTTP ${parRes.status} - ${await safeBody(parRes)}`);
+			throw new MelCloudHomeAuthenticationError(
+				`PAR request failed: HTTP ${parRes.status} - ${await safeBody(parRes)}`,
+			);
 		}
 		let parData: { request_uri?: string };
 		try {
@@ -204,7 +208,9 @@ export class MelCloudHomeAuth implements AbstractAuth {
 		const authResult = await this.fetchFollowingRedirects(authUrl, { method: "GET" });
 
 		if (!authResult.response) {
-			this.debug(`Authorize landed directly on a non-http redirect (already authenticated at the IdP): ${authResult.location}`);
+			this.debug(
+				`Authorize landed directly on a non-http redirect (already authenticated at the IdP): ${authResult.location}`,
+			);
 			// Landed directly on the app callback (already authenticated at the IdP).
 			await this.handleCallbackLocation(authResult.location, verifier);
 			return;
@@ -263,7 +269,9 @@ export class MelCloudHomeAuth implements AbstractAuth {
 		try {
 			query = new URL(location).searchParams;
 		} catch {
-			throw new MelCloudHomeAuthenticationError(`No authorization code in callback (unparseable location: ${location})`);
+			throw new MelCloudHomeAuthenticationError(
+				`No authorization code in callback (unparseable location: ${location})`,
+			);
 		}
 		const code = query.get("code");
 		if (!code) {
@@ -291,7 +299,9 @@ export class MelCloudHomeAuth implements AbstractAuth {
 			throw new MelCloudHomeAuthenticationError(`Token exchange failed: ${(err as Error).message}`);
 		}
 		if (!res.ok) {
-			throw new MelCloudHomeAuthenticationError(`Token exchange failed: HTTP ${res.status} - ${await safeBody(res)}`);
+			throw new MelCloudHomeAuthenticationError(
+				`Token exchange failed: HTTP ${res.status} - ${await safeBody(res)}`,
+			);
 		}
 		this.storeTokens((await res.json()) as Record<string, unknown>);
 		this.debug("Token exchange succeeded; session established");
@@ -325,7 +335,9 @@ export class MelCloudHomeAuth implements AbstractAuth {
 				await this.authenticate();
 				return;
 			}
-			throw new MelCloudHomeAuthenticationError(`Token refresh failed: HTTP ${res.status} - ${await safeBody(res)}`);
+			throw new MelCloudHomeAuthenticationError(
+				`Token refresh failed: HTTP ${res.status} - ${await safeBody(res)}`,
+			);
 		}
 		this.storeTokens((await res.json()) as Record<string, unknown>);
 		this.debug("Token refresh succeeded");
