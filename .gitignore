@@ -17,4 +17,7 @@ Thumbs.db
 admin/i18n/flat.txt
 admin/i18n/*/flat.txt
 
-build/
+# NOTE: build/ is intentionally committed (not ignored). Installing this adapter directly
+# from GitHub (rather than a published npm package) does not run any build step, so the
+# compiled build/ output must be checked in and kept up to date, or the adapter fails at
+# startup with "Cannot find module './lib/melcloud/...'".

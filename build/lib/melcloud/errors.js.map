@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/lib/melcloud/errors.ts"],
+  "sourcesContent": ["/** Error types mirroring the aiomelcloudhome Python client's exception hierarchy. */\n\nexport class MelCloudHomeError extends Error {}\n\nexport class MelCloudHomeConnectionError extends MelCloudHomeError {}\n\nexport class MelCloudHomeTimeoutError extends MelCloudHomeError {}\n\nexport class MelCloudHomeAuthenticationError extends MelCloudHomeError {}\n\nexport class MelCloudHomeNotFoundError extends MelCloudHomeError {}\n\nexport class MelCloudHomeWebSocketError extends MelCloudHomeError {}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAEO,MAAM,0BAA0B,MAAM;AAAC;AAEvC,MAAM,oCAAoC,kBAAkB;AAAC;AAE7D,MAAM,iCAAiC,kBAAkB;AAAC;AAE1D,MAAM,wCAAwC,kBAAkB;AAAC;AAEjE,MAAM,kCAAkC,kBAAkB;AAAC;AAE3D,MAAM,mCAAmC,kBAAkB;AAAC;",
+  "names": []
+}

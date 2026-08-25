@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../../../src/lib/melcloud/stringify.ts"],
+  "sourcesContent": ["/** Shared helper to stringify values of unknown shape without relying on the default `Object.toString`. */\n\nexport function stringify(value: unknown): string {\n\tif (value === null || value === undefined) {\n\t\treturn \"\";\n\t}\n\tif (typeof value === \"string\") {\n\t\treturn value;\n\t}\n\tif (typeof value === \"number\" || typeof value === \"boolean\") {\n\t\treturn String(value);\n\t}\n\treturn JSON.stringify(value);\n}\n"],
+  "mappings": ";;;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAEO,SAAS,UAAU,OAAwB;AACjD,MAAI,UAAU,QAAQ,UAAU,QAAW;AAC1C,WAAO;AAAA,EACR;AACA,MAAI,OAAO,UAAU,UAAU;AAC9B,WAAO;AAAA,EACR;AACA,MAAI,OAAO,UAAU,YAAY,OAAO,UAAU,WAAW;AAC5D,WAAO,OAAO,KAAK;AAAA,EACpB;AACA,SAAO,KAAK,UAAU,KAAK;AAC5B;",
+  "names": []
+}
