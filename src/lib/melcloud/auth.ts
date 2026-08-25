@@ -147,7 +147,9 @@ export class MelCloudHomeAuth implements AbstractAuth {
 			// hop is instead embedded in a `RedirectUri` query parameter of the page we just requested.
 			const redirectUriParam = !locationHeader ? target.searchParams.get("RedirectUri") : null;
 			const nextHop = locationHeader ?? redirectUriParam;
-			this.debug(`Redirect hop ${i + 1}: HTTP ${res.status} for ${currentUrl}${nextHop ? ` -> ${nextHop}` : " (terminal)"}`);
+			this.debug(
+				`Redirect hop ${i + 1}: HTTP ${res.status} for ${currentUrl}${nextHop ? ` -> ${nextHop}` : " (terminal)"}`,
+			);
 			if (!nextHop) {
 				return { location: currentUrl, response: res };
 			}
