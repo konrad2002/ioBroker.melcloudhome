@@ -22,7 +22,22 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 var utils = __toESM(require("@iobroker/adapter-core"));
+var import_auth = require("./lib/melcloud/auth");
+var import_client = require("./lib/melcloud/client");
+var import_state_specs = require("./lib/melcloud/state-specs");
+var import_websocket = require("./lib/melcloud/websocket");
+const SESSION_STATE_ID = "info.session";
+const MIN_POLL_INTERVAL_SECONDS = 15;
 class Melcloudhome extends utils.Adapter {
+  auth;
+  client;
+  socket;
+  pollTimer;
+  stopped = false;
+  /** Real MELCloud Home unit id -> where it lives in the object tree, used to apply realtime deltas. */
+  realIdToLocation = /* @__PURE__ */ new Map();
+  /** Object tree device path -> real MELCloud Home unit id, used to route control commands. */
+  pathToRealId = /* @__PURE__ */ new Map();
   constructor(options = {}) {
     super({
       ...options,
@@ -36,28 +51,343 @@ class Melcloudhome extends utils.Adapter {
    * Is called when databases are connected and adapter received configuration.
    */
   async onReady() {
-    this.setState("info.connection", false, true);
-    this.log.debug("config option1: ${this.config.option1}");
-    this.log.debug("config option2: ${this.config.option2}");
-    await this.setObjectNotExistsAsync("testVariable", {
+    var _a;
+    this.stopped = false;
+    await this.setStateAsync("info.connection", { val: false, ack: true });
+    const username = (_a = this.config.username) == null ? void 0 : _a.trim();
+    const password = this.config.password;
+    if (!username || !password) {
+      this.log.error("Please configure your MELCloud Home username and password in the adapter settings.");
+      return;
+    }
+    this.log.debug(
+      `Starting with username "${username}", pollInterval=${this.config.pollInterval}s, useWebSocket=${Boolean(this.config.useWebSocket)}`
+    );
+    await this.extendObjectAsync(SESSION_STATE_ID, {
       type: "state",
       common: {
-        name: "testVariable",
-        type: "boolean",
-        role: "indicator",
+        name: "Internal OAuth session (do not edit)",
+        type: "string",
+        role: "json",
         read: true,
-        write: true
+        write: false,
+        expert: true
       },
       native: {}
     });
-    this.subscribeStates("testVariable");
-    await this.setState("testVariable", true);
-    await this.setState("testVariable", { val: true, ack: true });
-    await this.setState("testVariable", { val: true, ack: true, expire: 30 });
-    const pwdResult = await this.checkPasswordAsync("admin", "iobroker");
-    this.log.info(`check user admin pw iobroker: ${JSON.stringify(pwdResult)}`);
-    const groupResult = await this.checkGroupAsync("admin", "admin");
-    this.log.info(`check group user admin group admin: ${JSON.stringify(groupResult)}`);
+    this.auth = new import_auth.MelCloudHomeAuth(username, password, this.log);
+    const savedSession = await this.getStateAsync(SESSION_STATE_ID);
+    if ((savedSession == null ? void 0 : savedSession.val) && typeof savedSession.val === "string") {
+      try {
+        this.auth.importSession(JSON.parse(savedSession.val));
+        this.log.debug("Restored persisted MELCloud Home session");
+      } catch (err) {
+        this.log.debug(
+          `Could not parse persisted MELCloud Home session (${err.message}); a fresh login will be performed.`
+        );
+      }
+    }
+    this.client = new import_client.MelCloudHomeClient(this.auth, void 0, void 0, this.log);
+    if (this.config.useWebSocket) {
+      this.socket = new import_websocket.MelCloudHomeWebSocket(this.auth, {
+        onDelta: (delta) => void this.applyDelta(delta),
+        onError: (err) => this.log.debug(`MELCloud Home WebSocket error: ${err.message}`),
+        onConnected: () => this.log.debug("MELCloud Home WebSocket connected"),
+        onDisconnected: () => this.log.debug("MELCloud Home WebSocket disconnected")
+      });
+      this.socket.start();
+    }
+    void this.pollLoop();
+  }
+  pollIntervalMs() {
+    const seconds = Math.max(Number(this.config.pollInterval) || 60, MIN_POLL_INTERVAL_SECONDS);
+    return seconds * 1e3;
+  }
+  async pollLoop() {
+    if (this.stopped) {
+      return;
+    }
+    try {
+      await this.refreshContext();
+      await this.setStateChangedAsync("info.connection", { val: true, ack: true });
+    } catch (err) {
+      const error = err;
+      this.log.error(`Failed to refresh MELCloud Home data: ${error.message || String(err)}`);
+      if (error == null ? void 0 : error.stack) {
+        this.log.debug(error.stack);
+      }
+      await this.setStateChangedAsync("info.connection", { val: false, ack: true });
+    }
+    if (!this.stopped) {
+      this.pollTimer = this.setTimeout(() => void this.pollLoop(), this.pollIntervalMs());
+    }
+  }
+  async refreshContext() {
+    if (!this.client || !this.auth) {
+      return;
+    }
+    this.log.debug("Fetching MELCloud Home context (/context)");
+    const context = await this.client.getContext();
+    const ataCount = context.buildings.reduce((sum, b) => sum + b.airToAirUnits.length, 0);
+    const atwCount = context.buildings.reduce((sum, b) => sum + b.airToWaterUnits.length, 0);
+    this.log.debug(`Fetched context: ${context.buildings.length} building(s), ${ataCount} ATA unit(s), ${atwCount} ATW unit(s)`);
+    await this.persistSession();
+    for (const building of context.buildings) {
+      const buildingId = this.sanitize(building.id);
+      await this.ensureFolder(buildingId, building.name || building.id);
+      for (const unit of building.airToAirUnits) {
+        await this.syncAtaUnit(buildingId, building, unit);
+      }
+      for (const unit of building.airToWaterUnits) {
+        await this.syncAtwUnit(buildingId, building, unit);
+      }
+    }
+  }
+  async persistSession() {
+    if (!this.auth) {
+      return;
+    }
+    await this.setStateAsync(SESSION_STATE_ID, { val: JSON.stringify(this.auth.exportSession()), ack: true });
+  }
+  async syncAtaUnit(buildingId, _building, unit) {
+    const channelId = `${buildingId}.ata`;
+    const devicePath = `${channelId}.${this.sanitize(unit.id)}`;
+    await this.ensureChannel(channelId, "Air-to-Air units");
+    await this.ensureDevice(devicePath, unit.name || unit.id);
+    this.realIdToLocation.set(unit.id, { path: devicePath, kind: "ata" });
+    this.pathToRealId.set(devicePath, unit.id);
+    await this.syncStateSpecs(devicePath, import_state_specs.ATA_STATE_SPECS, unit);
+    await this.syncPlainStates(
+      `${devicePath}.capabilities`,
+      "Capabilities",
+      unit.capabilities
+    );
+    await this.syncPlainStates(
+      `${devicePath}.frostProtection`,
+      "Frost protection",
+      unit.frostProtection
+    );
+    await this.syncPlainStates(
+      `${devicePath}.overheatProtection`,
+      "Overheat protection",
+      unit.overheatProtection
+    );
+    await this.syncPlainStates(
+      `${devicePath}.holidayMode`,
+      "Holiday mode",
+      unit.holidayMode
+    );
+  }
+  async syncAtwUnit(buildingId, _building, unit) {
+    const channelId = `${buildingId}.atw`;
+    const devicePath = `${channelId}.${this.sanitize(unit.id)}`;
+    await this.ensureChannel(channelId, "Air-to-Water units");
+    await this.ensureDevice(devicePath, unit.name || unit.id);
+    this.realIdToLocation.set(unit.id, { path: devicePath, kind: "atw" });
+    this.pathToRealId.set(devicePath, unit.id);
+    await this.syncStateSpecs(devicePath, import_state_specs.ATW_STATE_SPECS, unit);
+    await this.syncPlainStates(
+      `${devicePath}.capabilities`,
+      "Capabilities",
+      unit.capabilities
+    );
+    await this.syncPlainStates(
+      `${devicePath}.frostProtection`,
+      "Frost protection",
+      unit.frostProtection
+    );
+    await this.syncPlainStates(
+      `${devicePath}.overheatProtection`,
+      "Overheat protection",
+      unit.overheatProtection
+    );
+    await this.syncPlainStates(
+      `${devicePath}.holidayMode`,
+      "Holiday mode",
+      unit.holidayMode
+    );
+  }
+  async syncStateSpecs(devicePath, specs, data) {
+    for (const spec of specs) {
+      const id = `${devicePath}.${spec.id}`;
+      await this.ensureState(id, spec);
+      const value = data[spec.id];
+      if (value !== null && value !== void 0) {
+        await this.setStateChangedAsync(id, { val: value, ack: true });
+      }
+    }
+  }
+  async syncPlainStates(basePath, channelName, data) {
+    if (!data) {
+      return;
+    }
+    await this.ensureChannel(basePath, channelName);
+    for (const [key, value] of Object.entries(data)) {
+      if (value === null || value === void 0) {
+        continue;
+      }
+      const id = `${basePath}.${this.sanitize(key)}`;
+      const type = typeof value === "boolean" ? "boolean" : typeof value === "number" ? "number" : "string";
+      await this.extendObjectAsync(id, {
+        type: "state",
+        common: { name: key, type, role: type === "boolean" ? "indicator" : "value", read: true, write: false },
+        native: {}
+      });
+      await this.setStateChangedAsync(id, { val: value, ack: true });
+    }
+  }
+  async ensureFolder(id, name) {
+    await this.extendObjectAsync(id, { type: "folder", common: { name }, native: {} });
+  }
+  async ensureChannel(id, name) {
+    await this.extendObjectAsync(id, { type: "channel", common: { name }, native: {} });
+  }
+  async ensureDevice(id, name) {
+    await this.extendObjectAsync(id, { type: "device", common: { name }, native: {} });
+  }
+  async ensureState(id, spec) {
+    await this.extendObjectAsync(id, {
+      type: "state",
+      common: {
+        name: spec.name,
+        type: spec.type,
+        role: spec.role,
+        read: true,
+        write: spec.write,
+        ...spec.unit ? { unit: spec.unit } : {},
+        ...spec.states ? { states: spec.states } : {}
+      },
+      native: {}
+    });
+    if (spec.write) {
+      this.subscribeStates(id);
+    }
+  }
+  sanitize(id) {
+    return id.replace(/[^A-Za-z0-9_-]/g, "_");
+  }
+  async applyDelta(delta) {
+    const location = this.realIdToLocation.get(delta.unitId);
+    if (!location) {
+      return;
+    }
+    const specs = location.kind === "ata" ? import_state_specs.ATA_STATE_SPECS : import_state_specs.ATW_STATE_SPECS;
+    const validIds = new Set(specs.map((s) => s.id));
+    try {
+      for (const [name, value] of Object.entries(delta.changes)) {
+        if (value === null || value === void 0) {
+          continue;
+        }
+        const propId = name.charAt(0).toLowerCase() + name.slice(1);
+        if (!validIds.has(propId)) {
+          continue;
+        }
+        await this.setStateChangedAsync(`${location.path}.${propId}`, {
+          val: value,
+          ack: true
+        });
+      }
+    } catch (err) {
+      this.log.debug(`Failed to apply realtime update for ${delta.unitId}: ${err.message}`);
+    }
+  }
+  ataControlFor(prop, value) {
+    switch (prop) {
+      case "power":
+        return { power: Boolean(value) };
+      case "operationMode":
+        return { operationMode: String(value) };
+      case "setTemperature":
+        return { setTemperature: Number(value) };
+      case "setFanSpeed":
+        return { setFanSpeed: String(value) };
+      case "vaneVerticalDirection":
+        return { vaneVerticalDirection: String(value) };
+      case "vaneHorizontalDirection":
+        return { vaneHorizontalDirection: String(value) };
+      case "inStandbyMode":
+        return { inStandbyMode: Boolean(value) };
+      default:
+        return null;
+    }
+  }
+  atwControlFor(prop, value) {
+    switch (prop) {
+      case "power":
+        return { power: Boolean(value) };
+      case "operationModeZone1":
+        return { operationModeZone1: String(value) };
+      case "operationModeZone2":
+        return { operationModeZone2: String(value) };
+      case "setTemperatureZone1":
+        return { setTemperatureZone1: Number(value) };
+      case "setTemperatureZone2":
+        return { setTemperatureZone2: Number(value) };
+      case "setTankWaterTemperature":
+        return { setTankWaterTemperature: Number(value) };
+      case "forcedHotWaterMode":
+        return { forcedHotWaterMode: Boolean(value) };
+      case "inStandbyMode":
+        return { inStandbyMode: Boolean(value) };
+      case "setHeatFlowTemperatureZone1":
+        return { setHeatFlowTemperatureZone1: Number(value) };
+      case "setCoolFlowTemperatureZone1":
+        return { setCoolFlowTemperatureZone1: Number(value) };
+      case "setHeatFlowTemperatureZone2":
+        return { setHeatFlowTemperatureZone2: Number(value) };
+      case "setCoolFlowTemperatureZone2":
+        return { setCoolFlowTemperatureZone2: Number(value) };
+      default:
+        return null;
+    }
+  }
+  /**
+   * Is called if a subscribed state changes.
+   *
+   * @param id - State ID
+   * @param state - State object
+   */
+  onStateChange(id, state) {
+    if (!state || state.ack) {
+      return;
+    }
+    void this.handleStateChange(id, state);
+  }
+  async handleStateChange(id, state) {
+    var _a;
+    if (!this.client) {
+      return;
+    }
+    const prefix = `${this.namespace}.`;
+    const relative = id.startsWith(prefix) ? id.slice(prefix.length) : id;
+    const parts = relative.split(".");
+    if (parts.length < 4) {
+      return;
+    }
+    const [buildingId, kind, unitIdPart, ...propParts] = parts;
+    const devicePath = `${buildingId}.${kind}.${unitIdPart}`;
+    const prop = propParts.join(".");
+    const unitId = (_a = this.pathToRealId.get(devicePath)) != null ? _a : unitIdPart;
+    try {
+      if (kind === "ata") {
+        const control = this.ataControlFor(prop, state.val);
+        if (!control) {
+          return;
+        }
+        await this.client.controlAtaUnit(unitId, control);
+      } else if (kind === "atw") {
+        const control = this.atwControlFor(prop, state.val);
+        if (!control) {
+          return;
+        }
+        await this.client.controlAtwUnit(unitId, control);
+      } else {
+        return;
+      }
+      await this.setStateAsync(id, { val: state.val, ack: true });
+    } catch (err) {
+      this.log.error(`Failed to control ${id}: ${err.message}`);
+    }
   }
   /**
    * Is called when adapter shuts down - callback has to be called under any circumstances!
@@ -65,59 +395,19 @@ class Melcloudhome extends utils.Adapter {
    * @param callback - Callback function
    */
   onUnload(callback) {
+    var _a;
     try {
+      this.stopped = true;
+      if (this.pollTimer) {
+        this.clearTimeout(this.pollTimer);
+      }
+      (_a = this.socket) == null ? void 0 : _a.close();
       callback();
     } catch (error) {
       this.log.error(`Error during unloading: ${error.message}`);
       callback();
     }
   }
-  // If you need to react to object changes, uncomment the following block and the corresponding line in the constructor.
-  // You also need to subscribe to the objects with `this.subscribeObjects`, similar to `this.subscribeStates`.
-  // /**
-  //  * Is called if a subscribed object changes
-  //  */
-  // private onObjectChange(id: string, obj: ioBroker.Object | null | undefined): void {
-  // 	if (obj) {
-  // 		// The object was changed
-  // 		this.log.info(`object ${id} changed: ${JSON.stringify(obj)}`);
-  // 	} else {
-  // 		// The object was deleted
-  // 		this.log.info(`object ${id} deleted`);
-  // 	}
-  // }
-  /**
-   * Is called if a subscribed state changes
-   *
-   * @param id - State ID
-   * @param state - State object
-   */
-  onStateChange(id, state) {
-    if (state) {
-      this.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
-      if (state.ack === false) {
-        this.log.info(`User command received for ${id}: ${state.val}`);
-      }
-    } else {
-      this.log.info(`state ${id} deleted`);
-    }
-  }
-  // If you need to accept messages in your adapter, uncomment the following block and the corresponding line in the constructor.
-  // /**
-  //  * Some message was sent to this instance over message box. Used by email, pushover, text2speech, ...
-  //  * Using this method requires "common.messagebox" property to be set to true in io-package.json
-  //  */
-  //
-  // private onMessage(obj: ioBroker.Message): void {
-  // 	if (typeof obj === "object" && obj.message) {
-  // 		if (obj.command === "send") {
-  // 			// e.g. send email or pushover or whatever
-  // 			this.log.info("send command");
-  // 			// Send response in callback if required
-  // 			if (obj.callback) this.sendTo(obj.from, obj.command, "Message received", obj.callback);
-  // 		}
-  // 	}
-  // }
 }
 if (require.main !== module) {
   module.exports = (options) => new Melcloudhome(options);
