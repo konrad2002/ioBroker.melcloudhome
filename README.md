@@ -1,4 +1,5 @@
 ![Logo](admin/melcloudhome.png)
+
 # ioBroker.melcloudhome
 
 [![NPM version](https://img.shields.io/npm/v/iobroker.melcloudhome.svg)](https://www.npmjs.com/package/iobroker.melcloudhome)
@@ -50,11 +51,11 @@ URL/GitHub" while it is not yet on the public repository.
 
 Open the instance settings and fill in:
 
-| Setting | Description |
-|---|---|
-| **MELCloud Home username (email)** | The email address you use to log in to the MELCloud Home app. |
-| **MELCloud Home password** | Your MELCloud Home account password. Stored encrypted in the adapter configuration. |
-| **Poll interval (seconds)** | How often to fetch the full state from the MELCloud Home API (minimum 15 seconds). |
+| Setting                                          | Description                                                                                                                      |
+| ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| **MELCloud Home username (email)**               | The email address you use to log in to the MELCloud Home app.                                                                    |
+| **MELCloud Home password**                       | Your MELCloud Home account password. Stored encrypted in the adapter configuration.                                              |
+| **Poll interval (seconds)**                      | How often to fetch the full state from the MELCloud Home API (minimum 15 seconds).                                               |
 | **Use realtime WebSocket updates between polls** | If enabled, unit state changes are pushed to ioBroker as soon as MELCloud Home reports them, in addition to the regular polling. |
 
 ## Object tree
@@ -79,24 +80,30 @@ updated automatically from MELCloud Home.
 - Energy/telemetry history and the outdoor-temperature trend endpoints are not (yet) exposed.
 
 ## Changelog
+
 <!--
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
 
 ### **WORK IN PROGRESS**
-* (konrad2002) no unreleased changes yet
+
+- (konrad2002) no unreleased changes yet
 
 ### 0.1.0 (2026-08-25)
-* (konrad2002) first working version: MELCloud Home login, polling, realtime WebSocket updates and control for Air-to-Air and Air-to-Water units
+
+- (konrad2002) first working version: MELCloud Home login, polling, realtime WebSocket updates and control for Air-to-Air and Air-to-Water units
 
 ### 0.0.2 (2026-08-25)
-* (konrad2002) fix connection issues
+
+- (konrad2002) fix connection issues
 
 ### 0.0.1 (2026-08-25)
-* (konrad2002) initial release
+
+- (konrad2002) initial release
 
 ## License
+
 MIT License
 
 Copyright (c) 2026 konrad2002 <konrad@swimresults.de>
