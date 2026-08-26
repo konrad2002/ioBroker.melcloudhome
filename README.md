@@ -42,11 +42,6 @@ This adapter is an independent TypeScript implementation and is not affiliated w
   positions, standby mode, and more) by writing to the corresponding states.
 - The OAuth session is persisted internally, so the adapter does not need to log in again on every restart.
 
-## Installation
-
-Install the adapter through the ioBroker admin UI (Adapters tab) once it is published, or via "Install from custom
-URL/GitHub" while it is not yet on the public repository.
-
 ## Configuration
 
 Open the instance settings and fill in:
