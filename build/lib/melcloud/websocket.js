@@ -40,14 +40,15 @@ const BACKOFF_INITIAL_MS = 1e3;
 const BACKOFF_MAX_MS = 6e4;
 const HEARTBEAT_MS = 3e4;
 class MelCloudHomeWebSocket {
-  constructor(auth, handlers) {
+  constructor(adapter2, auth, handlers) {
+    this.adapter = adapter2;
     this.auth = auth;
     this.handlers = handlers;
   }
   stopped = false;
   ws = null;
-  reconnectTimer = null;
-  heartbeatTimer = null;
+  reconnectTimer = void 0;
+  heartbeatTimer = void 0;
   backoffMs = BACKOFF_INITIAL_MS;
   /** Start the (re)connecting live-update stream. Resolves once the first connection attempt has been made. */
   start() {
@@ -60,10 +61,10 @@ class MelCloudHomeWebSocket {
     var _a;
     this.stopped = true;
     if (this.reconnectTimer) {
-      clearTimeout(this.reconnectTimer);
+      this.adapter.clearTimeout(this.reconnectTimer);
     }
     if (this.heartbeatTimer) {
-      clearInterval(this.heartbeatTimer);
+      this.adapter.clearInterval(this.heartbeatTimer);
     }
     (_a = this.ws) == null ? void 0 : _a.close();
     this.ws = null;
@@ -95,7 +96,7 @@ class MelCloudHomeWebSocket {
         var _a2, _b2;
         this.backoffMs = BACKOFF_INITIAL_MS;
         (_b2 = (_a2 = this.handlers).onConnected) == null ? void 0 : _b2.call(_a2);
-        this.heartbeatTimer = setInterval(() => {
+        this.heartbeatTimer = this.adapter.setInterval(() => {
           if (ws.readyState === import_ws.default.OPEN) {
             ws.ping();
           }
@@ -116,14 +117,14 @@ class MelCloudHomeWebSocket {
       const scheduleReconnect = () => {
         var _a2, _b2;
         if (this.heartbeatTimer) {
-          clearInterval(this.heartbeatTimer);
+          this.adapter.clearInterval(this.heartbeatTimer);
         }
         this.ws = null;
         (_b2 = (_a2 = this.handlers).onDisconnected) == null ? void 0 : _b2.call(_a2);
         if (this.stopped) {
           return;
         }
-        this.reconnectTimer = setTimeout(() => void this.connect(), this.backoffMs);
+        this.adapter.setTimeout(() => void this.connect(), this.backoffMs);
         this.backoffMs = Math.min(this.backoffMs * 2, BACKOFF_MAX_MS);
       };
       ws.on("close", scheduleReconnect);
@@ -134,7 +135,7 @@ class MelCloudHomeWebSocket {
     } catch (err) {
       (_b = (_a = this.handlers).onError) == null ? void 0 : _b.call(_a, err);
       if (!this.stopped) {
-        this.reconnectTimer = setTimeout(() => void this.connect(), this.backoffMs);
+        this.reconnectTimer = this.adapter.setTimeout(() => void this.connect(), this.backoffMs);
         this.backoffMs = Math.min(this.backoffMs * 2, BACKOFF_MAX_MS);
       }
     }

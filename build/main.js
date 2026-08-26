@@ -87,9 +87,9 @@ class Melcloudhome extends utils.Adapter {
         );
       }
     }
-    this.client = new import_client.MelCloudHomeClient(this.auth, void 0, void 0, this.log);
+    this.client = new import_client.MelCloudHomeClient(this, this.auth, void 0, void 0, this.log);
     if (this.config.useWebSocket) {
-      this.socket = new import_websocket.MelCloudHomeWebSocket(this.auth, {
+      this.socket = new import_websocket.MelCloudHomeWebSocket(this, this.auth, {
         onDelta: (delta) => void this.applyDelta(delta),
         onError: (err) => this.log.debug(`MELCloud Home WebSocket error: ${err.message}`),
         onConnected: () => this.log.debug("MELCloud Home WebSocket connected"),

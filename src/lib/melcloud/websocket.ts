@@ -5,7 +5,6 @@ import type { AbstractAuth } from "./auth";
 import { MelCloudHomeWebSocketError } from "./errors";
 import { parseFrame } from "./realtime";
 import type { UnitStateDelta } from "./types";
-import {adapter} from "@iobroker/adapter-core";
 
 const WS_TOKEN_URL = "https://6x2dgdulg7omjsxalnhmo4ynba0dcgwk.lambda-url.eu-west-1.on.aws/";
 const WS_URL = "wss://ws.melcloudhome.com/";

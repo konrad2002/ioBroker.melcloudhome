@@ -25,7 +25,8 @@ var import_context = require("./context");
 var import_errors = require("./errors");
 const API_BASE = "https://mobile.bff.melcloudhome.com";
 class MelCloudHomeClient {
-  constructor(auth, apiBase = API_BASE, requestTimeoutMs = 1e4, logger) {
+  constructor(adapter, auth, apiBase = API_BASE, requestTimeoutMs = 1e4, logger) {
+    this.adapter = adapter;
     this.auth = auth;
     this.apiBase = apiBase;
     this.requestTimeoutMs = requestTimeoutMs;
@@ -50,7 +51,7 @@ class MelCloudHomeClient {
       }
     }
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), this.requestTimeoutMs);
+    const timeout = this.adapter.setTimeout(() => controller.abort(), this.requestTimeoutMs);
     let res;
     try {
       res = await fetch(url, {
@@ -72,7 +73,7 @@ class MelCloudHomeClient {
       }
       throw new import_errors.MelCloudHomeConnectionError(`Connection error: ${err.message}`);
     } finally {
-      clearTimeout(timeout);
+      this.adapter.clearTimeout(timeout);
     }
     (_d = this.logger) == null ? void 0 : _d.debug(`[client] ${method} ${url.toString()} -> HTTP ${res.status}`);
     if (res.status === 401) {
