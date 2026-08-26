@@ -80,8 +80,7 @@ updated automatically from MELCloud Home.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-
-### **WORK IN PROGRESS**
+### 0.3.0 (2026-08-26)
 
 - (konrad2002) use valid ioBroker roles matching declared common.type
 - (konrad2002) use folders instead of channels for buildings and unit categories

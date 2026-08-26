@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "melcloudhome",
-    "version": "0.2.2",
+    "version": "0.3.0",
     "news": {
+      "0.3.0": {
+        "en": "use valid ioBroker roles matching declared common.type\nuse folders instead of channels for buildings and unit categories",
+        "de": "Verwenden Sie gültige ioBroker-Rollen, die dem deklarierten common.type entsprechen.\nVerwenden Sie Ordner anstelle von Kanälen für Gebäude- und Einheitenkategorien.",
+        "ru": "использовать допустимые роли ioBroker, соответствующие объявленному типу common.type\nИспользуйте папки вместо каналов для категорий зданий и юнитов.",
+        "pt": "usar funções ioBroker válidas que correspondam ao tipo comum declarado\nUse pastas em vez de canais para edifícios e categorias de unidades.",
+        "nl": "Gebruik geldige ioBroker-rollen die overeenkomen met het gedeclareerde common.type.\nGebruik mappen in plaats van kanalen voor gebouwen en eenheidscategorieën.",
+        "fr": "Utilisez des rôles ioBroker valides correspondant au type commun déclaré.\nUtilisez des dossiers plutôt que des canaux pour les bâtiments et les catégories d'unités.",
+        "it": "utilizzare ruoli ioBroker validi corrispondenti al tipo comune dichiarato.\nUtilizzare cartelle anziché canali per categorie di edifici e unità",
+        "es": "usar roles ioBroker válidos que coincidan con el tipo común declarado.\nUtilice carpetas en lugar de canales para edificios y categorías de unidades.",
+        "pl": "użyj prawidłowych ról ioBroker pasujących do zadeklarowanego typu common.type\nużyj folderów zamiast kanałów dla budynków i kategorii jednostek",
+        "uk": "використовувати дійсні ролі ioBroker, що відповідають оголошеному common.type\nвикористовуйте папки замість каналів для категорій будівель та юнітів",
+        "zh-cn": "使用与声明的通用类型匹配的有效 ioBroker 角色\n使用文件夹而不是频道来管理建筑物和单位类别"
+      },
       "0.2.2": {
         "en": "fix release notes not correctly translated ._.",
         "de": "Die Versionshinweise wurden nicht korrekt übersetzt.",
