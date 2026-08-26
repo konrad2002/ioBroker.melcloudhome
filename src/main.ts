@@ -252,9 +252,11 @@ class Melcloudhome extends utils.Adapter {
 			}
 			const id = `${basePath}.${this.sanitize(key)}`;
 			const type = typeof value === "boolean" ? "boolean" : typeof value === "number" ? "number" : "string";
+			// "value" requires common.type=number and "indicator" requires boolean; plain strings need "text".
+			const role = type === "boolean" ? "indicator" : type === "number" ? "value" : "text";
 			await this.extendObjectAsync(id, {
 				type: "state",
-				common: { name: key, type, role: type === "boolean" ? "indicator" : "value", read: true, write: false },
+				common: { name: key, type, role, read: true, write: false },
 				native: {},
 			});
 			await this.setStateChangedAsync(id, { val: value as ioBroker.StateValue, ack: true });

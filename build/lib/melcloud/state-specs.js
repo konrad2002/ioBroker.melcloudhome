@@ -33,7 +33,7 @@ const ATA_STATE_SPECS = [
     id: "operationMode",
     name: "Operation mode",
     type: "string",
-    role: "level.mode.airconditioner",
+    role: "state",
     write: true,
     states: enumStates(import_types.ATA_OPERATION_MODES)
   },
@@ -57,7 +57,7 @@ const ATA_STATE_SPECS = [
     id: "setFanSpeed",
     name: "Fan speed (set)",
     type: "string",
-    role: "level.mode.fan",
+    role: "state",
     write: true,
     states: enumStates(import_types.ATA_FAN_SPEEDS)
   },
@@ -65,7 +65,7 @@ const ATA_STATE_SPECS = [
     id: "actualFanSpeed",
     name: "Fan speed (actual)",
     type: "string",
-    role: "value.mode.fan",
+    role: "state",
     write: false,
     states: enumStates(import_types.ATA_FAN_SPEEDS)
   },
@@ -73,7 +73,7 @@ const ATA_STATE_SPECS = [
     id: "vaneVerticalDirection",
     name: "Vane vertical direction",
     type: "string",
-    role: "level.mode.direction",
+    role: "state",
     write: true,
     states: enumStates(import_types.ATA_VANE_VERTICAL)
   },
@@ -81,7 +81,7 @@ const ATA_STATE_SPECS = [
     id: "vaneHorizontalDirection",
     name: "Vane horizontal direction",
     type: "string",
-    role: "level.mode.direction",
+    role: "state",
     write: true,
     states: enumStates(import_types.ATA_VANE_HORIZONTAL)
   },
@@ -96,7 +96,7 @@ const ATW_STATE_SPECS = [
     id: "operationMode",
     name: "Operation mode",
     type: "string",
-    role: "value.mode",
+    role: "state",
     write: false,
     states: enumStates(import_types.ATW_OPERATION_MODES)
   },
@@ -104,7 +104,7 @@ const ATW_STATE_SPECS = [
     id: "operationModeZone1",
     name: "Zone 1 mode",
     type: "string",
-    role: "level.mode",
+    role: "state",
     write: true,
     states: enumStates(import_types.ATW_ZONE_MODES)
   },
@@ -129,7 +129,7 @@ const ATW_STATE_SPECS = [
     id: "operationModeZone2",
     name: "Zone 2 mode",
     type: "string",
-    role: "level.mode",
+    role: "state",
     write: true,
     states: enumStates(import_types.ATW_ZONE_MODES)
   },

@@ -230,9 +230,10 @@ class Melcloudhome extends utils.Adapter {
       }
       const id = `${basePath}.${this.sanitize(key)}`;
       const type = typeof value === "boolean" ? "boolean" : typeof value === "number" ? "number" : "string";
+      const role = type === "boolean" ? "indicator" : type === "number" ? "value" : "text";
       await this.extendObjectAsync(id, {
         type: "state",
-        common: { name: key, type, role: type === "boolean" ? "indicator" : "value", read: true, write: false },
+        common: { name: key, type, role, read: true, write: false },
         native: {}
       });
       await this.setStateChangedAsync(id, { val: value, ack: true });
