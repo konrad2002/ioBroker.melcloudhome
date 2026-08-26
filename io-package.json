@@ -1,14 +1,27 @@
 {
   "common": {
     "name": "melcloudhome",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "news": {
+      "0.2.2": {
+        "en": "fix release notes not correctly translated ._.",
+        "de": "Die Versionshinweise wurden nicht korrekt übersetzt.",
+        "ru": "Исправлена ошибка в переводе примечаний к выпуску.",
+        "pt": "Corrigir notas de lançamento que não estavam traduzidas corretamente ._.",
+        "nl": "De release-opmerkingen zijn niet correct vertaald.",
+        "fr": "Correction des notes de version mal traduites ._.",
+        "it": "Correggere le note di rilascio non tradotte correttamente ._.",
+        "es": "Corregir las notas de la versión que no estaban traducidas correctamente ._.",
+        "pl": "poprawka niepoprawnie przetłumaczonych notatek o wydaniu ._.",
+        "uk": "виправити примітки до випуску, які не були правильно перекладені ._.",
+        "zh-cn": "修复版本说明翻译不正确的问题。"
+      },
       "0.2.1": {
         "en": "fix release pipeline",
         "de": "Fehlerbehebung in der Release-Pipeline",
         "ru": "исправить конвейер выпуска",
         "pt": "corrigir o pipeline de lançamento",
-        "nl": "fix release pipeline",
+        "nl": "reparatie release-pijplijn",
         "fr": "pipeline de publication de correctifs",
         "it": "correzione della pipeline di rilascio",
         "es": "Corregir el proceso de lanzamiento",
