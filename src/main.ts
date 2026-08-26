@@ -161,9 +161,10 @@ class Melcloudhome extends utils.Adapter {
 	}
 
 	private async syncAtaUnit(buildingId: string, _building: Building, unit: ATAUnit): Promise<void> {
-		const channelId = `${buildingId}.ata`;
-		const devicePath = `${channelId}.${this.sanitize(unit.id)}`;
-		await this.ensureChannel(channelId, "Air-to-Air units");
+		// A channel cannot be the parent of a device, so this grouping level must be a folder.
+		const groupId = `${buildingId}.ata`;
+		const devicePath = `${groupId}.${this.sanitize(unit.id)}`;
+		await this.ensureFolder(groupId, "Air-to-Air units");
 		await this.ensureDevice(devicePath, unit.name || unit.id);
 
 		this.realIdToLocation.set(unit.id, { path: devicePath, kind: "ata" });
@@ -193,9 +194,10 @@ class Melcloudhome extends utils.Adapter {
 	}
 
 	private async syncAtwUnit(buildingId: string, _building: Building, unit: ATWUnit): Promise<void> {
-		const channelId = `${buildingId}.atw`;
-		const devicePath = `${channelId}.${this.sanitize(unit.id)}`;
-		await this.ensureChannel(channelId, "Air-to-Water units");
+		// A channel cannot be the parent of a device, so this grouping level must be a folder.
+		const groupId = `${buildingId}.atw`;
+		const devicePath = `${groupId}.${this.sanitize(unit.id)}`;
+		await this.ensureFolder(groupId, "Air-to-Water units");
 		await this.ensureDevice(devicePath, unit.name || unit.id);
 
 		this.realIdToLocation.set(unit.id, { path: devicePath, kind: "atw" });

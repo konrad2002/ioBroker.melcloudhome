@@ -152,9 +152,9 @@ class Melcloudhome extends utils.Adapter {
     await this.setStateAsync(SESSION_STATE_ID, { val: JSON.stringify(this.auth.exportSession()), ack: true });
   }
   async syncAtaUnit(buildingId, _building, unit) {
-    const channelId = `${buildingId}.ata`;
-    const devicePath = `${channelId}.${this.sanitize(unit.id)}`;
-    await this.ensureChannel(channelId, "Air-to-Air units");
+    const groupId = `${buildingId}.ata`;
+    const devicePath = `${groupId}.${this.sanitize(unit.id)}`;
+    await this.ensureFolder(groupId, "Air-to-Air units");
     await this.ensureDevice(devicePath, unit.name || unit.id);
     this.realIdToLocation.set(unit.id, { path: devicePath, kind: "ata" });
     this.pathToRealId.set(devicePath, unit.id);
@@ -181,9 +181,9 @@ class Melcloudhome extends utils.Adapter {
     );
   }
   async syncAtwUnit(buildingId, _building, unit) {
-    const channelId = `${buildingId}.atw`;
-    const devicePath = `${channelId}.${this.sanitize(unit.id)}`;
-    await this.ensureChannel(channelId, "Air-to-Water units");
+    const groupId = `${buildingId}.atw`;
+    const devicePath = `${groupId}.${this.sanitize(unit.id)}`;
+    await this.ensureFolder(groupId, "Air-to-Water units");
     await this.ensureDevice(devicePath, unit.name || unit.id);
     this.realIdToLocation.set(unit.id, { path: devicePath, kind: "atw" });
     this.pathToRealId.set(devicePath, unit.id);
