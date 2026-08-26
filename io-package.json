@@ -3,32 +3,6 @@
     "name": "melcloudhome",
     "version": "0.1.0",
     "news": {
-      "0.0.1": {
-        "en": "initial release",
-        "de": "Erstveröffentlichung",
-        "ru": "Начальная версия",
-        "pt": "lançamento inicial",
-        "nl": "Eerste uitgave",
-        "fr": "Première version",
-        "it": "Versione iniziale",
-        "es": "Versión inicial",
-        "pl": "Pierwsze wydanie",
-        "uk": "Початкова версія",
-        "zh-cn": "首次出版"
-      },
-      "0.0.2": {
-        "en": "fix connection issues",
-        "de": "Verbindungsprobleme behoben",
-        "ru": "исправлены проблемы с подключением",
-        "pt": "corrigir problemas de conexão",
-        "nl": "verbindingsproblemen oplossen",
-        "fr": "corriger les problèmes de connexion",
-        "it": "risolvere i problemi di connessione",
-        "es": "solucionar problemas de conexión",
-        "pl": "rozwiązać problemy z połączeniem",
-        "uk": "виправити проблеми з підключенням",
-        "zh-cn": "修复连接问题"
-      },
       "0.1.0" : {
         "en": "first working version",
         "de": "erste funktionierende Version",
