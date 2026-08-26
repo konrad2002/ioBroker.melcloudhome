@@ -80,6 +80,10 @@ updated automatically from MELCloud Home.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.2.1 (2026-08-26)
+
+- (konrad2002) fix release pipeline
+
 ### 0.2.0 (2026-08-26)
 
 - (konrad2002) no unreleased changes yet

@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "melcloudhome",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "news": {
+      "0.2.1": {
+        "en": "fix release pipeline",
+        "de": "Fehlerbehebung in der Release-Pipeline",
+        "ru": "исправить конвейер выпуска",
+        "pt": "corrigir o pipeline de lançamento",
+        "nl": "fix release pipeline",
+        "fr": "pipeline de publication de correctifs",
+        "it": "correzione della pipeline di rilascio",
+        "es": "Corregir el proceso de lanzamiento",
+        "pl": "napraw potok wydań",
+        "uk": "виправити конвеєр випуску",
+        "zh-cn": "修复发布管道"
+      },
       "0.2.0": {
         "en": "Improve polling and WebSocket handling",
         "de": "Verbesserung der Abfrage und WebSocket-Verarbeitung",
