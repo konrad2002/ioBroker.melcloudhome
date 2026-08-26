@@ -9,6 +9,7 @@ const API_BASE = "https://mobile.bff.melcloudhome.com";
 
 export class MelCloudHomeClient {
 	public constructor(
+		private readonly adapter: ioBroker.Adapter,
 		private readonly auth: AbstractAuth,
 		private readonly apiBase: string = API_BASE,
 		private readonly requestTimeoutMs = 10_000,
@@ -41,7 +42,7 @@ export class MelCloudHomeClient {
 		}
 
 		const controller = new AbortController();
-		const timeout = setTimeout(() => controller.abort(), this.requestTimeoutMs);
+		const timeout = this.adapter.setTimeout(() => controller.abort(), this.requestTimeoutMs);
 		let res: Response;
 		try {
 			res = await fetch(url, {
@@ -63,7 +64,7 @@ export class MelCloudHomeClient {
 			}
 			throw new MelCloudHomeConnectionError(`Connection error: ${(err as Error).message}`);
 		} finally {
-			clearTimeout(timeout);
+			this.adapter.clearTimeout(timeout);
 		}
 
 		this.logger?.debug(`[client] ${method} ${url.toString()} -> HTTP ${res.status}`);
