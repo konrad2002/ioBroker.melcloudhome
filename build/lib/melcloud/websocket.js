@@ -40,8 +40,8 @@ const BACKOFF_INITIAL_MS = 1e3;
 const BACKOFF_MAX_MS = 6e4;
 const HEARTBEAT_MS = 3e4;
 class MelCloudHomeWebSocket {
-  constructor(adapter2, auth, handlers) {
-    this.adapter = adapter2;
+  constructor(adapter, auth, handlers) {
+    this.adapter = adapter;
     this.auth = auth;
     this.handlers = handlers;
   }

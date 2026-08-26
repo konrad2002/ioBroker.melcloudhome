@@ -1,9 +1,22 @@
 {
   "common": {
     "name": "melcloudhome",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "news": {
-      "0.1.0" : {
+      "0.2.0": {
+        "en": "Improve polling and WebSocket handling",
+        "de": "Verbesserung der Abfrage und WebSocket-Verarbeitung",
+        "ru": "Улучшение опроса и обработки WebSocket",
+        "pt": "Melhorar a sondagem e o manuseio do WebSocket",
+        "nl": "Verbeter de polling en WebSocket-afhandeling",
+        "fr": "Améliorer le sondage et la gestion des WebSockets",
+        "it": "Migliorare il polling e la gestione dei WebSocket",
+        "es": "Mejorar la sondeo y el manejo de WebSocket",
+        "pl": "Poprawa sondowania i obsługi WebSocket",
+        "uk": "Покращення опитування та обробки WebSocket",
+        "zh-cn": "改进轮询和 WebSocket 处理"
+      },
+      "0.1.0": {
         "en": "first working version",
         "de": "erste funktionierende Version",
         "ru": "первая рабочая версия",
