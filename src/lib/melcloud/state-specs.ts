@@ -84,7 +84,7 @@ export const ATA_STATE_SPECS: StateSpec[] = [
 	},
 	{ id: "inStandbyMode", name: "In standby mode", type: "boolean", role: "switch", write: true },
 	{ id: "isInError", name: "Is in error", type: "boolean", role: "indicator.error", write: false },
-	{ id: "rssi", name: "Signal strength (RSSI)", type: "number", role: "value.rssi", write: false },
+	{ id: "rssi", name: "Signal strength (RSSI)", type: "number", role: "value", write: false, unit: "dBm" },
 ];
 
 export const ATW_STATE_SPECS: StateSpec[] = [
@@ -165,7 +165,7 @@ export const ATW_STATE_SPECS: StateSpec[] = [
 	},
 	{ id: "forcedHotWaterMode", name: "Forced hot water mode", type: "boolean", role: "switch", write: true },
 	{ id: "isInError", name: "Is in error", type: "boolean", role: "indicator.error", write: false },
-	{ id: "rssi", name: "Signal strength (RSSI)", type: "number", role: "value.rssi", write: false },
+	{ id: "rssi", name: "Signal strength (RSSI)", type: "number", role: "value", write: false, unit: "dBm" },
 	// Write-only advanced flow-temperature overrides: the API accepts these but never reports a current value.
 	{
 		id: "setHeatFlowTemperatureZone1",
