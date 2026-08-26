@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "melcloudhome",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "news": {
+      "0.3.1": {
+        "en": "fix invalid types for rssi",
+        "de": "Ungültige Datentypen für RSSI korrigieren",
+        "ru": "Исправлены недопустимые типы данных для RSSI.",
+        "pt": "Corrigir tipos inválidos para rssi",
+        "nl": "Corrigeer ongeldige gegevenstypen voor rssi",
+        "fr": "Correction des types invalides pour RSSI",
+        "it": "correggere i tipi non validi per RSSI",
+        "es": "Corregir tipos no válidos para rssi",
+        "pl": "napraw nieprawidłowe typy dla rssi",
+        "uk": "виправити недійсні типи для rssi",
+        "zh-cn": "修复 RSSI 的无效类型"
+      },
       "0.3.0": {
         "en": "use valid ioBroker roles matching declared common.type\nuse folders instead of channels for buildings and unit categories",
         "de": "Verwenden Sie gültige ioBroker-Rollen, die dem deklarierten common.type entsprechen.\nVerwenden Sie Ordner anstelle von Kanälen für Gebäude- und Einheitenkategorien.",

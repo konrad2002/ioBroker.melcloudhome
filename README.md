@@ -80,6 +80,10 @@ updated automatically from MELCloud Home.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.3.1 (2026-08-26)
+
+- (konrad2002) fix invalid types for rssi
+
 ### 0.3.0 (2026-08-26)
 
 - (konrad2002) use valid ioBroker roles matching declared common.type
