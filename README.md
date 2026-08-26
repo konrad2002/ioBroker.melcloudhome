@@ -83,6 +83,7 @@ updated automatically from MELCloud Home.
 
 ### **WORK IN PROGRESS**
 
+- (konrad2002) use valid ioBroker roles matching declared common.type
 - (konrad2002) use folders instead of channels for buildings and unit categories
 
 ### 0.2.2 (2026-08-26)
