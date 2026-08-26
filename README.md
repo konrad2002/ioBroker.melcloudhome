@@ -80,6 +80,11 @@ updated automatically from MELCloud Home.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+
+### **WORK IN PROGRESS**
+
+- (konrad2002) use folders instead of channels for buildings and unit categories
+
 ### 0.2.2 (2026-08-26)
 
 - (konrad2002) fix release notes not correctly translated ._.
