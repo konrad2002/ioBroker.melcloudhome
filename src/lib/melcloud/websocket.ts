@@ -1,7 +1,7 @@
 /** On-demand WebSocket live-update client for MELCloud Home. */
 
 import WebSocket from "ws";
-import type { AbstractAuth } from "./auth";
+import { fetchWithTimeout, type AbstractAuth } from "./auth";
 import { MelCloudHomeWebSocketError } from "./errors";
 import { parseFrame } from "./realtime";
 import type { UnitStateDelta } from "./types";
@@ -55,7 +55,7 @@ export class MelCloudHomeWebSocket {
 
 	private async fetchHash(): Promise<string> {
 		const token = await this.auth.getAccessToken();
-		const res = await fetch(WS_TOKEN_URL, { headers: { Authorization: `Bearer ${token}` } });
+		const res = await fetchWithTimeout(WS_TOKEN_URL, { headers: { Authorization: `Bearer ${token}` } });
 		if (!res.ok) {
 			throw new MelCloudHomeWebSocketError(`WebSocket token request failed: HTTP ${res.status}`);
 		}

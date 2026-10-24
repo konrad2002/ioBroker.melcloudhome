@@ -12,6 +12,23 @@ const SCOPES = "openid profile email offline_access IdentityServerApi";
 const TOKEN_REFRESH_BUFFER_MS = 60_000;
 const MAX_REDIRECTS = 10;
 
+export const REQUEST_TIMEOUT_MS = 30_000;
+
+/**
+ * `fetch` that aborts when the server does not respond within the timeout.
+ *
+ * @param url
+ * @param init
+ * @param timeoutMs
+ */
+export function fetchWithTimeout(
+	url: string,
+	init: RequestInit = {},
+	timeoutMs = REQUEST_TIMEOUT_MS,
+): Promise<Response> {
+	return fetch(url, { ...init, signal: AbortSignal.timeout(timeoutMs) });
+}
+
 export interface AbstractAuth {
 	getAccessToken: () => Promise<string>;
 }
@@ -133,7 +150,7 @@ export class MelCloudHomeAuth implements AbstractAuth {
 			const target = new URL(currentUrl);
 			let res: Response;
 			try {
-				res = await fetch(currentUrl, {
+				res = await fetchWithTimeout(currentUrl, {
 					...init,
 					redirect: "manual",
 					headers: { ...init.headers, Cookie: this.jar.header(target) },
@@ -171,7 +188,7 @@ export class MelCloudHomeAuth implements AbstractAuth {
 		const parTarget = new URL(parUrl);
 		let parRes: Response;
 		try {
-			parRes = await fetch(parUrl, {
+			parRes = await fetchWithTimeout(parUrl, {
 				method: "POST",
 				headers: { "Content-Type": "application/x-www-form-urlencoded", Cookie: this.jar.header(parTarget) },
 				body: new URLSearchParams({
@@ -237,7 +254,7 @@ export class MelCloudHomeAuth implements AbstractAuth {
 		const loginTarget = new URL(loginRequestUrl);
 		let loginRes: Response;
 		try {
-			loginRes = await fetch(loginRequestUrl, {
+			loginRes = await fetchWithTimeout(loginRequestUrl, {
 				method: "POST",
 				headers: { "Content-Type": "application/x-www-form-urlencoded", Cookie: this.jar.header(loginTarget) },
 				body: new URLSearchParams({ _csrf: csrfToken, username: this.username, password: this.password }),
@@ -286,7 +303,7 @@ export class MelCloudHomeAuth implements AbstractAuth {
 	private async exchangeCode(code: string, verifier: string): Promise<void> {
 		let res: Response;
 		try {
-			res = await fetch(`${AUTH_BASE}/connect/token`, {
+			res = await fetchWithTimeout(`${AUTH_BASE}/connect/token`, {
 				method: "POST",
 				headers: { "Content-Type": "application/x-www-form-urlencoded" },
 				body: new URLSearchParams({
@@ -319,7 +336,7 @@ export class MelCloudHomeAuth implements AbstractAuth {
 		this.debug("Refreshing access token using stored refresh token");
 		let res: Response;
 		try {
-			res = await fetch(`${AUTH_BASE}/connect/token`, {
+			res = await fetchWithTimeout(`${AUTH_BASE}/connect/token`, {
 				method: "POST",
 				headers: { "Content-Type": "application/x-www-form-urlencoded" },
 				body: new URLSearchParams({
