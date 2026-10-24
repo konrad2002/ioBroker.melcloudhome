@@ -73,6 +73,8 @@ updated automatically from MELCloud Home.
 
 - Frost protection, overheat protection and holiday mode are currently read-only (informational).
 - Energy/telemetry history and the outdoor-temperature trend endpoints are not (yet) exposed.
+- The ATW flow-temperature override states (`setHeatFlowTemperatureZone1/2`, `setCoolFlowTemperatureZone1/2`) are
+  effectively write-only: the API never reports them back, so their value does not reflect the actual device state.
 
 ## Changelog
 

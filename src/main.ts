@@ -165,7 +165,7 @@ class Melcloudhome extends utils.Adapter {
 		const groupId = `${buildingId}.ata`;
 		const devicePath = `${groupId}.${this.sanitize(unit.id)}`;
 		await this.ensureFolder(groupId, "Air-to-Air units");
-		await this.ensureDevice(devicePath, unit.name || unit.id);
+		await this.ensureDevice(devicePath, unit.name?.trim() || unit.id);
 
 		this.realIdToLocation.set(unit.id, { path: devicePath, kind: "ata" });
 		this.pathToRealId.set(devicePath, unit.id);
@@ -198,7 +198,7 @@ class Melcloudhome extends utils.Adapter {
 		const groupId = `${buildingId}.atw`;
 		const devicePath = `${groupId}.${this.sanitize(unit.id)}`;
 		await this.ensureFolder(groupId, "Air-to-Water units");
-		await this.ensureDevice(devicePath, unit.name || unit.id);
+		await this.ensureDevice(devicePath, unit.name?.trim() || unit.id);
 
 		this.realIdToLocation.set(unit.id, { path: devicePath, kind: "atw" });
 		this.pathToRealId.set(devicePath, unit.id);
