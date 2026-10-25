@@ -82,6 +82,10 @@ updated automatically from MELCloud Home.
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.3.2 (2026-10-25)
+
+- (konrad2002) handle auth timeout
+
 ### 0.3.1 (2026-08-26)
 
 - (konrad2002) fix invalid types for rssi

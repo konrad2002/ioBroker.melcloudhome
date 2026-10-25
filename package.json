@@ -1,6 +1,6 @@
 {
   "name": "iobroker.melcloudhome",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "This adapter integrates Mitsubishi Electric devices via MELCloud Home into ioBroker.",
   "author": {
     "name": "konrad2002",

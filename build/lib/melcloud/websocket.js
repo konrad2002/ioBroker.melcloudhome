@@ -32,6 +32,7 @@ __export(websocket_exports, {
 });
 module.exports = __toCommonJS(websocket_exports);
 var import_ws = __toESM(require("ws"));
+var import_auth = require("./auth");
 var import_errors = require("./errors");
 var import_realtime = require("./realtime");
 const WS_TOKEN_URL = "https://6x2dgdulg7omjsxalnhmo4ynba0dcgwk.lambda-url.eu-west-1.on.aws/";
@@ -71,7 +72,7 @@ class MelCloudHomeWebSocket {
   }
   async fetchHash() {
     const token = await this.auth.getAccessToken();
-    const res = await fetch(WS_TOKEN_URL, { headers: { Authorization: `Bearer ${token}` } });
+    const res = await (0, import_auth.fetchWithTimeout)(WS_TOKEN_URL, { headers: { Authorization: `Bearer ${token}` } });
     if (!res.ok) {
       throw new import_errors.MelCloudHomeWebSocketError(`WebSocket token request failed: HTTP ${res.status}`);
     }

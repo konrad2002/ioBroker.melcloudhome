@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "melcloudhome",
-    "version": "0.3.1",
+    "version": "0.3.2",
     "news": {
+      "0.3.2": {
+        "en": "Handle auth timeout",
+        "de": "Auth-Timeout behandeln",
+        "ru": "Обработка тайм-аута аутентификации",
+        "pt": "Lidar com o tempo limite de autenticação",
+        "nl": "Auth-timeout afhandelen",
+        "fr": "Gérer le délai d'expiration de l'authentification",
+        "it": "Gestire il timeout di autenticazione",
+        "es": "Manejar el tiempo de espera de autenticación",
+        "pl": "Obsługa limitu czasu uwierzytelniania",
+        "uk": "Обробка тайм-ауту автентифікації",
+        "zh-cn": "处理身份验证超时"
+      },
       "0.3.1": {
         "en": "fix invalid types for rssi",
         "de": "Ungültige Datentypen für RSSI korrigieren",

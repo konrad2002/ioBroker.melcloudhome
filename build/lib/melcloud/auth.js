@@ -19,7 +19,9 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 var auth_exports = {};
 __export(auth_exports, {
   MelCloudHomeAuth: () => MelCloudHomeAuth,
-  StaticTokenAuth: () => StaticTokenAuth
+  REQUEST_TIMEOUT_MS: () => REQUEST_TIMEOUT_MS,
+  StaticTokenAuth: () => StaticTokenAuth,
+  fetchWithTimeout: () => fetchWithTimeout
 });
 module.exports = __toCommonJS(auth_exports);
 var import_node_crypto = require("node:crypto");
@@ -32,6 +34,10 @@ const REDIRECT_URI = "melcloudhome://";
 const SCOPES = "openid profile email offline_access IdentityServerApi";
 const TOKEN_REFRESH_BUFFER_MS = 6e4;
 const MAX_REDIRECTS = 10;
+const REQUEST_TIMEOUT_MS = 3e4;
+function fetchWithTimeout(url, init = {}, timeoutMs = REQUEST_TIMEOUT_MS) {
+  return fetch(url, { ...init, signal: AbortSignal.timeout(timeoutMs) });
+}
 class StaticTokenAuth {
   constructor(accessToken) {
     this.accessToken = accessToken;
@@ -121,7 +127,7 @@ class MelCloudHomeAuth {
       const target = new URL(currentUrl);
       let res;
       try {
-        res = await fetch(currentUrl, {
+        res = await fetchWithTimeout(currentUrl, {
           ...init,
           redirect: "manual",
           headers: { ...init.headers, Cookie: this.jar.header(target) }
@@ -155,7 +161,7 @@ class MelCloudHomeAuth {
     const parTarget = new URL(parUrl);
     let parRes;
     try {
-      parRes = await fetch(parUrl, {
+      parRes = await fetchWithTimeout(parUrl, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded", Cookie: this.jar.header(parTarget) },
         body: new URLSearchParams({
@@ -215,7 +221,7 @@ class MelCloudHomeAuth {
     const loginTarget = new URL(loginRequestUrl);
     let loginRes;
     try {
-      loginRes = await fetch(loginRequestUrl, {
+      loginRes = await fetchWithTimeout(loginRequestUrl, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded", Cookie: this.jar.header(loginTarget) },
         body: new URLSearchParams({ _csrf: csrfToken, username: this.username, password: this.password }),
@@ -261,7 +267,7 @@ class MelCloudHomeAuth {
   async exchangeCode(code, verifier) {
     let res;
     try {
-      res = await fetch(`${AUTH_BASE}/connect/token`, {
+      res = await fetchWithTimeout(`${AUTH_BASE}/connect/token`, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({
@@ -293,7 +299,7 @@ class MelCloudHomeAuth {
     this.debug("Refreshing access token using stored refresh token");
     let res;
     try {
-      res = await fetch(`${AUTH_BASE}/connect/token`, {
+      res = await fetchWithTimeout(`${AUTH_BASE}/connect/token`, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({
@@ -329,6 +335,8 @@ class MelCloudHomeAuth {
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   MelCloudHomeAuth,
-  StaticTokenAuth
+  REQUEST_TIMEOUT_MS,
+  StaticTokenAuth,
+  fetchWithTimeout
 });
 //# sourceMappingURL=auth.js.map
