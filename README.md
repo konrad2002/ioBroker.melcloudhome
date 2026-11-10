@@ -13,7 +13,7 @@
 
 ## melcloudhome adapter for ioBroker
 
-This adapter connects [ioBroker](https://www.iobroker.net/) to the **MELCloud Home** cloud platform and lets you
+This adapter connects [ioBroker](https://www.iobroker.net/) to the [**MELCloud Home**](https://melcloudhome.com/) cloud platform and lets you
 read and control Mitsubishi Electric Air-to-Air (climate/AC) and Air-to-Water (heat pump) units.
 
 ### Disclaimer
